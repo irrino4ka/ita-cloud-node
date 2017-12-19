@@ -1,0 +1,27 @@
+image: node:6
+
+stages:
+  - test
+  - build
+
+before_script:
+  - set -xe
+  - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+  - echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list
+  - apt-get update -yqqq
+  - apt-get install -y google-chrome-stable
+  - apt-get install -y xvfb
+
+test:
+  stage: test
+  script:
+    - npm install
+    - ./node_modules/@angular/cli/bin/ng test --single-run=true --browsers chrome_headless --watch=false
+
+build:
+  stage: build
+  script:
+    - npm install
+    - ./node_modules/@angular/cli/bin/ng build 
+  only:
+    - dev2
